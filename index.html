@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bigboy XO - Elite Responsive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-glow: #00d2ff;
+            --secondary-glow: #ff007f;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --body-bg: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #050505);
+        }
+
+        .light-mode {
+            --primary-glow: #4facfe;
+            --secondary-glow: #f093fb;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-color: #2d3436;
+            --body-bg: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #e0c3fc, #fbc2eb);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Clean touch for mobile */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--body-bg);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
+            transition: background 0.5s ease;
+            padding: 10px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -1px;
+            margin: 0 0 15px 0;
+            background: linear-gradient(to right, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .player-inputs {
+            display: flex;
+            flex-direction: column; /* Stacked by default for mobile */
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            color: var(--text-color);
+            text-align: center;
+            font-family: 'Poppins';
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 5px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            font-family: 'Poppins';
+            background: var(--glass-border);
+            color: var(--text-color);
+            transition: 0.2s;
+        }
+
+        button.active {
+            background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+            color: white;
+        }
+
+        .status-bar {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            aspect-ratio: 1/1;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .cell:active { transform: scale(0.9); }
+
+        .x-move { color: var(--primary-glow); text-shadow: 0 0 10px var(--primary-glow); }
+        .o-move { color: var(--secondary-glow); text-shadow: 0 0 10px var(--secondary-glow); }
+
+        .history-section {
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        #history-list {
+            max-height: 70px;
+            overflow-y: auto;
+            padding: 0;
+            list-style: none;
+            margin-top: 5px;
+        }
+
+        #history-list li {
+            padding: 4px 8px;
+            border-left: 3px solid var(--primary-glow);
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 4px;
+        }
+
+        .bigboy-logo {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .bigboy-name {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.6rem;
+            background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* Responsive Desktop Adjustments */
+        @media (min-width: 480px) {
+            .player-inputs { flex-direction: row; }
+            h1 { font-size: 2.2rem; }
+            .cell { font-size: 3.5rem; }
+            button { font-size: 0.9rem; padding: 12px; }
+            .glass-card { padding: 30px; }
+        }
+    </style>
+</head>
+<body class="dark-mode"> <div class="glass-card">
+        <h1>BIGBOY XO</h1>
+        
+        <div class="status-bar" id="status">X's Turn</div>
+
+        <div class="player-inputs">
+            <input type="text" id="p1" placeholder="Player X" value="Player 1">
+            <input type="text" id="p2" placeholder="Player O" value="Player 2">
+        </div>
+
+        <div class="btn-group">
+            <button id="mode-btn" onclick="toggleMode()">PvP</button>
+            <button onclick="toggleTheme()">Theme</button>
+            <button onclick="resetGame()">Reset</button>
+        </div>
+
+        <div class="game-grid" id="grid">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="history-section">
+            <div style="font-weight: 600;">Match History</div>
+            <ul id="history-list"></ul>
+        </div>
+    </div>
+
+    <div class="bigboy-logo">
+        Created by <span class="bigboy-name">Bigboy</span>
+    </div>
+
+    <script>
+        const cells = document.querySelectorAll('.cell');
+        const statusText = document.getElementById('status');
+        const p1Input = document.getElementById('p1');
+        const p2Input = document.getElementById('p2');
+        const historyList = document.getElementById('history-list');
+
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+        let isAI = false;
+
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function handleMove(e) {
+            const idx = e.target.getAttribute('data-index');
+            if (gameState[idx] !== "" || !gameActive) return;
+            executeMove(idx);
+            if (isAI && gameActive && currentPlayer === 'O') setTimeout(smartAIMove, 500);
+        }
+
+        function executeMove(idx) {
+            gameState[idx] = currentPlayer;
+            cells[idx].innerHTML = `<span class="${currentPlayer === 'X' ? 'x-move' : 'o-move'}">${currentPlayer}</span>`;
+            if (navigator.vibrate) navigator.vibrate(40);
+            
+            if (checkWin()) {
+                const winner = currentPlayer === 'X' ? p1Input.value : p2Input.value;
+                statusText.innerHTML = `🎉 ${winner} Wins!`;
+                logHistory(winner + " Won");
+                gameActive = false;
+                return;
+            }
+
+            if (!gameState.includes("")) {
+                statusText.innerText = "Draw!";
+                logHistory("Draw");
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            statusText.innerText = `${currentPlayer === 'X' ? p1Input.value : p2Input.value}'s Turn`;
+        }
+
+        function checkWin() {
+            return wins.some(cond => cond.every(i => gameState[i] === currentPlayer));
+        }
+
+        function smartAIMove() {
+            let move = findBest('O') || findBest('X'); // Win or Block
+            if (move === null && gameState[4] === "") move = 4; // Center
+            if (move === null) {
+                const avail = gameState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+                move = avail[Math.floor(Math.random() * avail.length)];
+            }
+            if (move !== null) executeMove(move);
+        }
+
+        function findBest(p) {
+            for (let cond of wins) {
+                const vals = cond.map(i => gameState[i]);
+                if (vals.filter(v => v === p).length === 2 && vals.indexOf("") !== -1) return cond[vals.indexOf("")];
+            }
+            return null;
+        }
+
+        function toggleMode() {
+            isAI = !isAI;
+            document.getElementById('mode-btn').innerText = isAI ? "vs CPU" : "PvP";
+            p2Input.value = isAI ? "Computer" : "Player 2";
+            p2Input.disabled = isAI;
+            resetGame();
+        }
+
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+        function logHistory(res) {
+            const li = document.createElement('li');
+            li.innerText = `${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} - ${res}`;
+            historyList.prepend(li);
+        }
+
+        function resetGame() {
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            currentPlayer = 'X';
+            statusText.innerText = `${p1Input.value}'s Turn`;
+            cells.forEach(c => c.innerHTML = "");
+        }
+
+        cells.forEach(c => c.addEventListener('click', handleMove));
+    </script>
+</body>
+</html>
