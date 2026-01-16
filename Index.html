@@ -1,1 +1,360 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Tic Tac Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --cell-bg: #fff;
+            --cell-hover: #f9f9f9;
+            --primary: #4a90e2;
+            --secondary: #ff6b6b;
+            --border: #ccc;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #f0f0f0;
+            --cell-bg: #3d3d3d;
+            --cell-hover: #4d4d4d;
+            --border: #555;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+            padding-bottom: 30px; /* Space for the footer */
+        }
+
+        h1 { margin-bottom: 10px; }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            width: 120px;
+            text-align: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: scale(0.95); }
+        button.secondary { background-color: #666; }
+        button#theme-btn { background-color: var(--secondary); }
+
+        .status {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .game--container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 auto;
+            width: 300px;
+            height: 300px;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            background-color: var(--cell-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .cell:hover { background-color: var(--cell-hover); }
+        .cell[data-val="X"] { color: var(--primary); }
+        .cell[data-val="O"] { color: var(--secondary); }
+
+        .history {
+            margin-top: 20px;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .history h3 { border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        
+        #history-list {
+            list-style: none;
+            padding: 0;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        #history-list li {
+            padding: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* --- NEW STYLES FOR BIGBOY SIGNATURE --- */
+        .creator-signature {
+            margin-top: 25px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .creator-name {
+            font-family: 'Permanent Marker', cursive; /* Special Font */
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-left: 5px;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            display: inline-block;
+            transform: rotate(-3deg); /* Slight tilt for style */
+            transition: transform 0.3s;
+        }
+
+        .creator-name:hover {
+            transform: rotate(3deg) scale(1.1); /* Animation on hover */
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tic Tac Toe</h1>
+
+    <div class="container">
+        <div class="controls">
+            <input type="text" id="p1-name" placeholder="Player X Name" value="Player 1">
+            <input type="text" id="p2-name" placeholder="Player O Name" value="Player 2">
+        </div>
+        
+        <div class="controls">
+            <button id="mode-btn" onclick="toggleMode()">Mode: PvP</button>
+            <button id="theme-btn" onclick="toggleTheme()">Change Theme</button>
+        </div>
+
+        <div class="status" id="status">X's Turn</div>
+
+        <div class="game--container">
+            <div data-cell-index="0" class="cell"></div>
+            <div data-cell-index="1" class="cell"></div>
+            <div data-cell-index="2" class="cell"></div>
+            <div data-cell-index="3" class="cell"></div>
+            <div data-cell-index="4" class="cell"></div>
+            <div data-cell-index="5" class="cell"></div>
+            <div data-cell-index="6" class="cell"></div>
+            <div data-cell-index="7" class="cell"></div>
+            <div data-cell-index="8" class="cell"></div>
+        </div>
+
+        <div class="controls" style="margin-top: 20px;">
+            <button class="secondary" onclick="restartGame()">Restart Game</button>
+        </div>
+
+        <div class="history">
+            <h3>Match History</h3>
+            <ul id="history-list"></ul>
+        </div>
+    </div>
+
+    <div class="creator-signature">
+        Created by <span class="creator-name">Bigboy</span>
+    </div>
+
+    <script>
+        const statusDisplay = document.querySelector('#status');
+        const p1Input = document.getElementById('p1-name');
+        const p2Input = document.getElementById('p2-name');
+        const historyList = document.getElementById('history-list');
+        
+        let gameActive = true;
+        let currentPlayer = "X";
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+        let isComputerMode = false;
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        // --- Core Game Functions ---
+
+        function handleCellClick(clickedCellEvent) {
+            const clickedCell = clickedCellEvent.target;
+            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
+
+            if (gameState[clickedCellIndex] !== "" || !gameActive) {
+                return;
+            }
+
+            // Human Move
+            handleCellPlayed(clickedCell, clickedCellIndex);
+            handleResultValidation();
+
+            // Computer Move (if active and game not over)
+            if (isComputerMode && gameActive && currentPlayer === "O") {
+                setTimeout(computerPlay, 500); // Slight delay for realism
+            }
+        }
+
+        function handleCellPlayed(clickedCell, clickedCellIndex) {
+            gameState[clickedCellIndex] = currentPlayer;
+            clickedCell.innerHTML = currentPlayer;
+            clickedCell.setAttribute('data-val', currentPlayer);
+            
+            // Trigger Vibration (50ms)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function handleResultValidation() {
+            let roundWon = false;
+            for (let i = 0; i <= 7; i++) {
+                const winCondition = winningConditions[i];
+                let a = gameState[winCondition[0]];
+                let b = gameState[winCondition[1]];
+                let c = gameState[winCondition[2]];
+                if (a === '' || b === '' || c === '') continue;
+                if (a === b && b === c) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                const winnerName = currentPlayer === "X" ? p1Input.value : p2Input.value;
+                statusDisplay.innerHTML = `🏆 ${winnerName} has won!`;
+                addToHistory(`${winnerName} won`);
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                gameActive = false;
+                return;
+            }
+
+            let roundDraw = !gameState.includes("");
+            if (roundDraw) {
+                statusDisplay.innerHTML = "Game ended in a draw!";
+                addToHistory("Draw");
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            updateStatusMessage();
+        }
+
+        function updateStatusMessage() {
+            const currentPlayerName = currentPlayer === "X" ? p1Input.value : p2Input.value;
+            statusDisplay.innerHTML = `It's ${currentPlayerName}'s turn`;
+        }
+
+        // --- Computer Logic ---
+        function computerPlay() {
+            let emptyCells = [];
+            gameState.forEach((cell, index) => {
+                if (cell === "") emptyCells.push(index);
+            });
+
+            if (emptyCells.length > 0) {
+                const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                const cellIndex = emptyCells[randomIndex];
+                const cell = document.querySelector(`[data-cell-index='${cellIndex}']`);
+                
+                handleCellPlayed(cell, cellIndex);
+                handleResultValidation();
+            }
+        }
+
+        // --- Features (Theme, History, Mode) ---
+
+        function toggleMode() {
+            isComputerMode = !isComputerMode;
+            const modeBtn = document.getElementById('mode-btn');
+            
+            if (isComputerMode) {
+                modeBtn.innerText = "Mode: PvC";
+                p2Input.value = "Computer";
+                p2Input.disabled = true;
+            } else {
+                modeBtn.innerText = "Mode: PvP";
+                p2Input.value = "Player 2";
+                p2Input.disabled = false;
+            }
+            restartGame();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function addToHistory(result) {
+            const li = document.createElement('li');
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            li.textContent = `${time} - ${result}`;
+            historyList.insertBefore(li, historyList.firstChild);
+        }
+
+        function restartGame() {
+            gameActive = true;
+            currentPlayer = "X";
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            updateStatusMessage();
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.innerHTML = "";
+                cell.removeAttribute('data-val');
+            });
+        }
+
+        document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
+        updateStatusMessage();
+
+    </script>
+</body>
+</html>
